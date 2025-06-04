@@ -49,6 +49,7 @@ class Drone(pufferlib.PufferEnv):
         )
 
         self.num_agents = num_envs
+        self.render_mode = render_mode
         self.report_interval = report_interval
         self.tick = 0
 
