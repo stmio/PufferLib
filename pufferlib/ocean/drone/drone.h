@@ -156,6 +156,10 @@ void compute_observations(Drone *env) {
   env->observations[15] = env->omega.z / MAX_OMEGA;
 }
 
+void c_close(Drone *env) {}
+
+void c_render(Drone *env) {}
+
 void c_reset(Drone *env) {
   env->log = (Log){0};
   env->tick = 0;
