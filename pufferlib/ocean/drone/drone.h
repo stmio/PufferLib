@@ -35,10 +35,6 @@ struct Log {
   float n;
 };
 
-// ------------------------------------------------------------
-// Helper functions for vector math in ℝ³
-// ------------------------------------------------------------
-
 typedef struct {
   float w, x, y, z;
 } Quaternion;
@@ -121,52 +117,43 @@ struct Drone {
   int n_targets;
   int moves_left;
 
-  Vector3 *pos;     // global position (x, y, z)
-  Vector3 *vel;     // linear velocity (u, v, w)
-  Quaternion *quat; // roll/pitch/yaw (phi/theta/psi) as a quaternion
-  Vector3 *omega;   // angular velocity (p, q, r)
+  Vector3 pos;     // global position (x, y, z)
+  Vector3 vel;     // linear velocity (u, v, w)
+  Quaternion quat; // roll/pitch/yaw (phi/theta/psi) as a quaternion
+  Vector3 omega;   // angular velocity (p, q, r)
 
-  Vector3 *move_target;   // move target position
-  Vector3 *look_target;   // look target position
-  Vector3 *vec_to_target; // vector to target
+  Vector3 move_target;   // move target position
+  Vector3 look_target;   // look target position
+  Vector3 vec_to_target; // vector to target
 };
 
 void init(Drone *env) {
   env->log = (Log){0};
   env->tick = 0;
-
-  env->pos = (Vector3 *)calloc(1, sizeof(Vector3));
-  env->vel = (Vector3 *)calloc(1, sizeof(Vector3));
-  env->quat = (Quaternion *)calloc(1, sizeof(Quaternion));
-  env->omega = (Vector3 *)calloc(1, sizeof(Vector3));
-  env->move_target = (Vector3 *)calloc(1, sizeof(Vector3));
-  env->look_target = (Vector3 *)calloc(1, sizeof(Vector3));
-  env->vec_to_target = (Vector3 *)calloc(1, sizeof(Vector3));
-
   srand(time(NULL));
 }
 
 void compute_observations(Drone *env) {
-  env->observations[0] = env->move_target->x / GRID_SIZE;
-  env->observations[1] = env->move_target->y / GRID_SIZE;
-  env->observations[2] = env->move_target->z / GRID_SIZE;
+  env->observations[0] = env->move_target.x / GRID_SIZE;
+  env->observations[1] = env->move_target.y / GRID_SIZE;
+  env->observations[2] = env->move_target.z / GRID_SIZE;
 
-  env->observations[3] = env->pos->x / GRID_SIZE;
-  env->observations[4] = env->pos->y / GRID_SIZE;
-  env->observations[5] = env->pos->z / GRID_SIZE;
+  env->observations[3] = env->pos.x / GRID_SIZE;
+  env->observations[4] = env->pos.y / GRID_SIZE;
+  env->observations[5] = env->pos.z / GRID_SIZE;
 
-  env->observations[6] = env->quat->w;
-  env->observations[7] = env->quat->x;
-  env->observations[8] = env->quat->y;
-  env->observations[9] = env->quat->z;
+  env->observations[6] = env->quat.w;
+  env->observations[7] = env->quat.x;
+  env->observations[8] = env->quat.y;
+  env->observations[9] = env->quat.z;
 
-  env->observations[10] = env->vel->x / MAX_VEL;
-  env->observations[11] = env->vel->y / MAX_VEL;
-  env->observations[12] = env->vel->z / MAX_VEL;
+  env->observations[10] = env->vel.x / MAX_VEL;
+  env->observations[11] = env->vel.y / MAX_VEL;
+  env->observations[12] = env->vel.z / MAX_VEL;
 
-  env->observations[13] = env->omega->x / MAX_OMEGA;
-  env->observations[14] = env->omega->y / MAX_OMEGA;
-  env->observations[15] = env->omega->z / MAX_OMEGA;
+  env->observations[13] = env->omega.x / MAX_OMEGA;
+  env->observations[14] = env->omega.y / MAX_OMEGA;
+  env->observations[15] = env->omega.z / MAX_OMEGA;
 }
 
 void c_reset(Drone *env) {
@@ -177,31 +164,31 @@ void c_reset(Drone *env) {
   env->n_targets = 5;
   env->moves_left = 1000;
 
-  env->move_target->x = rndf(-9, 9);
-  env->move_target->y = rndf(-9, 9);
-  env->move_target->z = rndf(-9, 9);
+  env->move_target.x = rndf(-9, 9);
+  env->move_target.y = rndf(-9, 9);
+  env->move_target.z = rndf(-9, 9);
 
-  env->look_target->x = rndf(-9, 9);
-  env->look_target->y = rndf(-9, 9);
-  env->look_target->z = rndf(-9, 9);
+  env->look_target.x = rndf(-9, 9);
+  env->look_target.y = rndf(-9, 9);
+  env->look_target.z = rndf(-9, 9);
 
   // state
-  env->pos->x = rndf(-9, 9);
-  env->pos->y = rndf(-9, 9);
-  env->pos->z = rndf(-9, 9);
+  env->pos.x = rndf(-9, 9);
+  env->pos.y = rndf(-9, 9);
+  env->pos.z = rndf(-9, 9);
 
-  env->vel->x = 0.0f;
-  env->vel->y = 0.0f;
-  env->vel->z = 0.0f;
+  env->vel.x = 0.0f;
+  env->vel.y = 0.0f;
+  env->vel.z = 0.0f;
 
-  env->quat->w = 1.0f;
-  env->quat->x = 0.0f;
-  env->quat->y = 0.0f;
-  env->quat->z = 0.0f;
+  env->quat.w = 1.0f;
+  env->quat.x = 0.0f;
+  env->quat.y = 0.0f;
+  env->quat.z = 0.0f;
 
-  env->omega->x = 0.0f;
-  env->omega->y = 0.0f;
-  env->omega->z = 0.0f;
+  env->omega.x = 0.0f;
+  env->omega.y = 0.0f;
+  env->omega.z = 0.0f;
 
   compute_observations(env);
 }
@@ -210,9 +197,9 @@ void c_step(Drone *env) {
   clamp4(env->actions, -1.0f, 1.0f);
 
   // distance to target pre-step for rew calcs
-  Vector3 prev_vec = {env->pos->x - env->move_target->x,
-                      env->pos->y - env->move_target->y,
-                      env->pos->z - env->move_target->z};
+  Vector3 prev_vec = {env->pos.x - env->move_target.x,
+                      env->pos.y - env->move_target.y,
+                      env->pos.z - env->move_target.z};
 
   env->tick += 1;
   env->log.episode_length += 1;
@@ -234,56 +221,56 @@ void c_step(Drone *env) {
                K_DRAG * (T[0] - T[1] + T[2] - T[3])};
 
   // applies angular damping to torques
-  M.x -= K_ANG_DAMP * env->omega->x;
-  M.y -= K_ANG_DAMP * env->omega->y;
-  M.z -= K_ANG_DAMP * env->omega->z;
+  M.x -= K_ANG_DAMP * env->omega.x;
+  M.y -= K_ANG_DAMP * env->omega.y;
+  M.z -= K_ANG_DAMP * env->omega.z;
 
   // body frame force -> world frame force
-  Vector3 F_world = quat_rotate(*env->quat, F_body);
+  Vector3 F_world = quat_rotate(env->quat, F_body);
 
   // world frame linear drag
-  F_world.x -= B_DRAG * env->vel->x;
-  F_world.y -= B_DRAG * env->vel->y;
-  F_world.z -= B_DRAG * env->vel->z;
+  F_world.x -= B_DRAG * env->vel.x;
+  F_world.y -= B_DRAG * env->vel.y;
+  F_world.z -= B_DRAG * env->vel.z;
 
   // world frame gravity
   Vector3 accel = {F_world.x / MASS, (F_world.y / MASS) - GRAVITY,
                    F_world.z / MASS};
 
   // integrates quaternion
-  Quaternion omega_q = {0.0f, env->omega->x, env->omega->y, env->omega->z};
-  Quaternion q_dot = quat_mul(*env->quat, omega_q);
+  Quaternion omega_q = {0.0f, env->omega.x, env->omega.y, env->omega.z};
+  Quaternion q_dot = quat_mul(env->quat, omega_q);
 
   q_dot.w *= 0.5f;
   q_dot.x *= 0.5f;
   q_dot.y *= 0.5f;
   q_dot.z *= 0.5f;
 
-  env->pos->x += env->vel->x * DT;
-  env->pos->y += env->vel->y * DT;
-  env->pos->z += env->vel->z * DT;
+  env->pos.x += env->vel.x * DT;
+  env->pos.y += env->vel.y * DT;
+  env->pos.z += env->vel.z * DT;
 
-  env->vel->x += accel.x * DT;
-  env->vel->y += accel.y * DT;
-  env->vel->z += accel.z * DT;
+  env->vel.x += accel.x * DT;
+  env->vel.y += accel.y * DT;
+  env->vel.z += accel.z * DT;
 
-  env->omega->x += (M.x / IXX) * DT;
-  env->omega->y += (M.y / IYY) * DT;
-  env->omega->z += (M.z / IZZ) * DT;
+  env->omega.x += (M.x / IXX) * DT;
+  env->omega.y += (M.y / IYY) * DT;
+  env->omega.z += (M.z / IZZ) * DT;
 
-  clamp3(*env->vel, -MAX_VEL, MAX_VEL);
-  clamp3(*env->omega, -MAX_OMEGA, MAX_OMEGA);
+  clamp3(env->vel, -MAX_VEL, MAX_VEL);
+  clamp3(env->omega, -MAX_OMEGA, MAX_OMEGA);
 
-  env->quat->w += q_dot.w * DT;
-  env->quat->x += q_dot.x * DT;
-  env->quat->y += q_dot.y * DT;
-  env->quat->z += q_dot.z * DT;
-  quat_normalize(*env->quat);
+  env->quat.w += q_dot.w * DT;
+  env->quat.x += q_dot.x * DT;
+  env->quat.y += q_dot.y * DT;
+  env->quat.z += q_dot.z * DT;
+  quat_normalize(env->quat);
 
   // check out of bounds
-  bool out_of_bounds = env->pos->x < -10.0f || env->pos->x > 10.0f ||
-                       env->pos->y < -10.0f || env->pos->y > 10.0f ||
-                       env->pos->z < -10.0f || env->pos->z > 10.0f;
+  bool out_of_bounds = env->pos.x < -10.0f || env->pos.x > 10.0f ||
+                       env->pos.y < -10.0f || env->pos.y > 10.0f ||
+                       env->pos.z < -10.0f || env->pos.z > 10.0f;
 
   // give rewards
   if (out_of_bounds) {
@@ -295,23 +282,23 @@ void c_step(Drone *env) {
     return;
   }
 
-  env->vec_to_target->x = env->pos->x - env->move_target->x;
-  env->vec_to_target->y = env->pos->y - env->move_target->y;
-  env->vec_to_target->z = env->pos->z - env->move_target->z;
+  env->vec_to_target.x = env->pos.x - env->move_target.x;
+  env->vec_to_target.y = env->pos.y - env->move_target.y;
+  env->vec_to_target.z = env->pos.z - env->move_target.z;
 
-  float dist = norm3(prev_vec) - norm3(*env->vec_to_target);
+  float dist = norm3(prev_vec) - norm3(env->vec_to_target);
   env->rewards[0] += dist;
   env->log.episode_return += dist;
 
-  if (norm3(*env->vec_to_target) < 1.5) {
+  if (norm3(env->vec_to_target) < 1.5) {
     env->rewards[0] += 1;
     env->log.episode_return += 1;
     env->log.score += 1;
     env->n_targets -= 1;
 
-    env->move_target->x = rndf(-10, 10);
-    env->move_target->y = rndf(-10, 10);
-    env->move_target->z = rndf(-10, 10);
+    env->move_target.x = rndf(-10, 10);
+    env->move_target.y = rndf(-10, 10);
+    env->move_target.z = rndf(-10, 10);
   }
 
   env->moves_left -= 1;
