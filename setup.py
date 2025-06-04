@@ -395,6 +395,7 @@ c_extensions_names = [
     'gpudrive',
     'squared',
     'pong',
+    'drone',
     'boids',
     'breakout',
     'enduro',
