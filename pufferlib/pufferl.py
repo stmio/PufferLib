@@ -326,68 +326,88 @@ class PuffeRL:
         losses = defaultdict(float)
         config = self.config
         device = config['device']
+        horizon = config['bptt_horizon']
 
-        beta = 0.1
-        percentile = 0.2
-        adaptive_beta = True
-        reference_update_freq = 5
+        # DPPO params
+        beta = 0.1 # DPO temperature
+        percentile = 0.25 # Defines the percentile of "good" and "bad" segments
+        reference_update_freq = 10 # Number of epochs before reference is updated
 
-        segment_returns = self.rewards.sum(dim=1)
-        advantages = (segment_returns - segment_returns.mean()) / (segment_returns.std() + 1e-8)
+        # Mask segment rewards after terminals
+        done = torch.logical_or(self.truncations, self.terminals)
+        mask = (done.cumsum(dim=1) == 0) | done
+        self.rewards *= mask.float()
 
-        if adaptive_beta:
-            beta /= (segment_returns.std() + 1e-8)
-            beta = torch.clamp(beta, 0.01, 1.0).item()
+        # Compute segment-local discounts for batch usage as an upper triangular matrix
+        discount_matrix = torch.triu(config['gamma'] ** torch.abs(
+            torch.arange(horizon, device=device).unsqueeze(1) - torch.arange(horizon, device=device)
+        ))
 
-        idxs = torch.argsort(segment_returns)
-        bound = int(self.segments * percentile)
-        good_idxs, bad_idxs = idxs[-bound:], idxs[:bound]
+        # Compute discounted return for all segments
+        returns = torch.bmm(
+            discount_matrix.unsqueeze(0).expand(self.segments, -1, -1),
+            self.rewards.unsqueeze(2)
+        ).squeeze(-1)
+
+        # Denote the segment quality as the average return over valid steps
+        segment_quality = returns.sum(dim=1) / mask.sum(dim=1).clamp(min=1)
+
+        # Sort the segments, and then create S+ and S-, the indexes of good and bad
+        # segments based on the percentile defined
+        idxs = torch.argsort(segment_quality)
+        n = int(self.segments * percentile)
+        S_p, S_m = idxs[-n:], idxs[:n]
 
         for mb in range(self.total_minibatches):
             profile('train_misc', epoch, nest=True)
             self.amp_context.__enter__()
 
-            n_pairs = self.minibatch_size // (2 * config['bptt_horizon'])
-            good_batch_idx = good_idxs[torch.randint(len(good_idxs), (n_pairs,))]
-            bad_batch_idx = bad_idxs[torch.randint(len(bad_idxs), (n_pairs,))]
-
-            adv = (advantages[good_batch_idx] - advantages[bad_batch_idx]).abs()
+            pairs = self.minibatch_segments // 2
+            mb_idx_p = S_p[torch.randint(n, (pairs,), device=device)]
+            mb_idx_m = S_m[torch.randint(n, (pairs,), device=device)]
 
             profile('train_copy', epoch)
-            good_obs, good_actions = self.observations[good_batch_idx], self.actions[good_batch_idx]
-            bad_obs, bad_actions = self.observations[bad_batch_idx], self.actions[bad_batch_idx]
+            obs_p, actions_p = self.observations[mb_idx_p], self.actions[mb_idx_p]
+            obs_m, actions_m = self.observations[mb_idx_m], self.actions[mb_idx_m]
 
-            # TODO: Get episode terminals for masking
-            good_terminals, bad_terminals = self.terminals[good_batch_idx], self.terminals[bad_batch_idx]
+            mask_p, mask_m = mask[mb_idx_p], mask[mb_idx_m]
 
             profile('train_forward', epoch)
             if not config['use_rnn']:
-                good_obs = good_obs.reshape(-1, *self.vecenv.single_observation_space.shape)
-                bad_obs = bad_obs.reshape(-1, *self.vecenv.single_observation_space.shape)
+                obs_p = obs_p.reshape(-1, *self.vecenv.single_observation_space.shape)
+                obs_m = obs_m.reshape(-1, *self.vecenv.single_observation_space.shape)
 
-            good_state = dict(action=good_actions, lstm_h=None, lstm_c=None)
-            bad_state = dict(action=bad_actions, lstm_h=None, lstm_c=None)
+            state_p = dict(action=actions_p, lstm_h=None, lstm_c=None)
+            state_m = dict(action=actions_m, lstm_h=None, lstm_c=None)
 
-            good_logits, _ = self.policy(good_obs, good_state)
-            bad_logits, _ = self.policy(bad_obs, bad_state)
+            logits_p, _ = self.policy(obs_p, state_p)
+            logits_m, _ = self.policy(obs_m, state_m)
 
-            _, good_logprob, good_entropy = pufferlib.pytorch.sample_logits(good_logits, action=good_actions)
-            _, bad_logprob, bad_entropy = pufferlib.pytorch.sample_logits(bad_logits, action=bad_actions)
+            _, logprob_p, ent_p = pufferlib.pytorch.sample_logits(logits_p, action=actions_p)
+            _, logprob_m, ent_m = pufferlib.pytorch.sample_logits(logits_m, action=actions_m)
 
+            logprob_p, logprob_m = logprob_p.reshape(pairs, -1), logprob_m.reshape(pairs, -1)
+
+            # Compute logprobs from ref policy without affecting autograd
             with torch.no_grad():
-                ref_good_logits, _ = self.reference_policy(good_obs, good_state)
-                ref_bad_logits, _ = self.reference_policy(bad_obs, bad_state)
+                ref_logits_p, _ = self.reference_policy(obs_p, state_p)
+                ref_logits_m, _ = self.reference_policy(obs_m, state_m)
 
-                _, ref_good, _ = pufferlib.pytorch.sample_logits(ref_good_logits, action=good_actions)
-                _, ref_bad, _ = pufferlib.pytorch.sample_logits(ref_bad_logits, action=bad_actions)
+                _, ref_p, _ = pufferlib.pytorch.sample_logits(ref_logits_p, action=actions_p)
+                _, ref_m, _ = pufferlib.pytorch.sample_logits(ref_logits_m, action=actions_m)
 
-            r_good = good_logprob.sum() - ref_good.sum()
-            r_bad = bad_logprob.sum() - ref_bad.sum()
+                ref_p, ref_m = ref_p.reshape(pairs, -1), ref_m.reshape(pairs, -1)
 
-            logits = beta * (r_good - r_bad)
-            dpo_loss = -(torch.nn.functional.logsigmoid(logits) * adv).mean()
+            # DPO loss
+            r_p = (logprob_p * mask_p).sum(dim=1) - (ref_p * mask_p).sum(dim=1)
+            r_m = (logprob_m * mask_m).sum(dim=1) - (ref_m * mask_m).sum(dim=1)
+            dpo_loss = -torch.nn.functional.logsigmoid(beta * (r_p - r_m)).mean()
 
-            avg_entropy = 0.5 * (good_entropy.mean() + bad_entropy.mean())
+            # Entropy
+            mask_p, mask_m = mask_p.flatten(), mask_m.flatten()
+            mask_sum = mask_p.sum() + mask_m.sum()
+            avg_entropy = ((ent_p * mask_p).sum() + (ent_m * mask_m).sum()) / mask_sum.clamp(min=1e-8)
+
             loss = dpo_loss - config['ent_coef'] * avg_entropy
 
             # Logging
@@ -395,10 +415,9 @@ class PuffeRL:
             with torch.no_grad():
                 losses['dpo_loss'] += dpo_loss.item() / self.total_minibatches
                 losses['entropy'] += avg_entropy.item() / self.total_minibatches
-                losses['avg_adv'] += adv.mean().item() / self.total_minibatches
-                losses['adaptive_beta'] += beta / self.total_minibatches
-                losses['good_return'] += segment_returns[good_idxs].mean().item() / self.total_minibatches
-                losses['bad_return'] += segment_returns[bad_idxs].mean().item() / self.total_minibatches
+                losses['good_return'] += segment_quality[S_p].mean().item() / self.total_minibatches
+                losses['bad_return'] += segment_quality[S_m].mean().item() / self.total_minibatches
+                losses['diff_return'] += (losses['good_return'] - losses['bad_return'])
 
             # Learn on accumulated minibatches
             profile('learn', epoch)
@@ -617,29 +636,6 @@ class PuffeRL:
             console.print(dashboard)
 
         print('\033[0;0H' + capture.get())
-
-def compute_puff_advantage(values, rewards, terminals,
-        ratio, advantages, gamma, gae_lambda, vtrace_rho_clip, vtrace_c_clip):
-    '''CUDA kernel for puffer advantage with automatic CPU fallback. You need
-    nvcc (in cuda-dev-tools or in a cuda-dev docker base) for PufferLib to
-    compile the fast version.'''
-
-    device = values.device
-    if not ADVANTAGE_CUDA:
-        values = values.cpu()
-        rewards = rewards.cpu()
-        terminals = terminals.cpu()
-        ratio = ratio.cpu()
-        advantages = advantages.cpu()
-
-    torch.ops.pufferlib.compute_puff_advantage(values, rewards, terminals,
-        ratio, advantages, gamma, gae_lambda, vtrace_rho_clip, vtrace_c_clip)
-
-    if not ADVANTAGE_CUDA:
-        return advantages.to(device)
-
-    return advantages
-
 
 def abbreviate(num, b2, c2):
     if num < 1e3:
