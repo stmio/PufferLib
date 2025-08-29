@@ -300,9 +300,9 @@ class PuffeRL:
         # PBB hyperparameters
         self.pbb_gamma = config.get("pbb_gamma", 0.99)  # TD discount
         self.pbb_tau = config.get("pbb_tau", 0.005)  # Target network update rate
-        self.lambda_td = config.get("lambda_td", 0.7)
-        self.lambda_bt = config.get("lambda_bt", 0.8)
-        self.lambda_delta = config.get("lambda_delta", 0.7)
+        self.lambda_td = config.get("lambda_td", 1.0)
+        self.lambda_bt = config.get("lambda_bt", 0.85)
+        self.lambda_delta = config.get("lambda_delta", 1.0)
         self.lambda_actor = config.get(
             "lambda_actor", 0.1
         )  # Weight for preference advantage loss
@@ -579,9 +579,9 @@ class PuffeRL:
         horizon = config["bptt_horizon"]
 
         # DPPO params
-        beta = 0.85  # DPO temperature
+        beta = 0.95  # DPO temperature
         percentile = 0.25  # Defines the percentile of "good" and "bad" segments
-        reference_update_freq = 10  # Number of epochs before reference is updated
+        reference_update_freq = 5 # Number of epochs before reference is updated
 
         # Mask segment rewards after terminals
         done = torch.logical_or(self.truncations, self.terminals)
@@ -872,6 +872,12 @@ class PuffeRL:
                 torch.nn.utils.clip_grad_norm_(
                     self.policy.parameters(), config["max_grad_norm"]
                 )
+                torch.nn.utils.clip_grad_norm_(
+                    self.preference_net.parameters(), config["max_grad_norm"]
+                )
+                torch.nn.utils.clip_grad_norm_(
+                    self.immediate_net.parameters(), config["max_grad_norm"]
+                )
                 self.optimizer.step()
                 self.optimizer.zero_grad()
 
@@ -891,7 +897,13 @@ class PuffeRL:
             self.scheduler.step()
 
         if self.epoch % reference_update_freq == 0:
-            self.reference_policy.load_state_dict(self.policy.state_dict())
+            tau = 0.15
+            with torch.no_grad():
+                for param, ref_param in zip(
+                    self.policy.parameters(), self.reference_policy.parameters()
+                ):
+                    ref_param.data.mul_(1 - tau)
+                    ref_param.data.add_(tau * param.data)
 
         profile.end()
 
