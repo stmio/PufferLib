@@ -43,6 +43,7 @@ typedef struct Breakout {
     float* actions;
     float* rewards;
     unsigned char* terminals;
+    unsigned char* truncations;
     int score;
     float paddle_x;
     float paddle_y;
@@ -122,6 +123,7 @@ void allocate(Breakout* env) {
     env->actions = (float*)calloc(1, sizeof(float));
     env->rewards = (float*)calloc(1, sizeof(float));
     env->terminals = (unsigned char*)calloc(1, sizeof(unsigned char));
+    env->truncations = (unsigned char*)calloc(1, sizeof(unsigned char));
 }
 
 void c_close(Breakout* env) {
@@ -134,6 +136,7 @@ void free_allocated(Breakout* env) {
     free(env->actions);
     free(env->observations);
     free(env->terminals);
+    free(env->truncations);
     free(env->rewards);
     c_close(env);
 }
@@ -469,12 +472,20 @@ void step_frame(Breakout* env, float action) {
 
 void c_step(Breakout* env) {
     env->terminals[0] = 0;
+    env->truncations[0] = 0;
     env->rewards[0] = 0.0;
 
     float action = env->actions[0];
     for (int i = 0; i < env->frameskip; i++) {
         env->tick += 1;
         step_frame(env, action);
+    }
+
+    // Random truncation for testing (1% chance per step)
+    if (!env->terminals[0] && (rand() % 100) < 1) {
+        env->truncations[0] = 1;
+        add_log(env);
+        c_reset(env);
     }
 
     compute_observations(env);
