@@ -1,4 +1,5 @@
 #include "breakout.h"
+#define ENV_HAS_TRUNCATIONS
 
 #define Env Breakout
 #include "../env_binding.h"

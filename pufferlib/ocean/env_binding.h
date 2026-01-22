@@ -133,7 +133,10 @@ static PyObject* env_init(PyObject* self, PyObject* args, PyObject* kwargs) {
         PyErr_SetString(PyExc_ValueError, "Truncations must be 1D");
         return NULL;
     }
-    // env->truncations = PyArray_DATA(truncations);
+
+    #ifdef ENV_HAS_TRUNCATIONS
+    env->truncations = PyArray_DATA(truncations);
+    #endif
     
     
     PyObject* seed_arg = PyTuple_GetItem(args, 5);
@@ -418,7 +421,9 @@ static PyObject* vec_init(PyObject* self, PyObject* args, PyObject* kwargs) {
         env->actions = (void*)((char*)PyArray_DATA(actions) + i*PyArray_STRIDE(actions, 0));
         env->rewards = (void*)((char*)PyArray_DATA(rewards) + i*PyArray_STRIDE(rewards, 0));
         env->terminals = (void*)((char*)PyArray_DATA(terminals) + i*PyArray_STRIDE(terminals, 0));
-        // env->truncations = (void*)((char*)PyArray_DATA(truncations) + i*PyArray_STRIDE(truncations, 0));
+        #ifdef ENV_HAS_TRUNCATIONS
+        env->truncations = (void*)((char*)PyArray_DATA(truncations) + i*PyArray_STRIDE(truncations, 0));
+        #endif
 
         // Assumes each process has the same number of environments
         int env_seed = i + seed*vec->num_envs;
