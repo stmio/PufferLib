@@ -4,28 +4,29 @@
 
 namespace pufferlib {
 
-__host__ __device__ void puff_advantage_row_cuda(float* values, float* rewards, float* dones,
-        float* importance, float* advantages, float gamma, float lambda,
+__host__ __device__ void puff_advantage_row_cuda(float* values, float* rewards, float* terminals,
+        float* truncations, float* importance, float* advantages, float gamma, float lambda,
         float rho_clip, float c_clip, int horizon) {
     float lastpufferlam = 0;
     for (int t = horizon-2; t >= 0; t--) {
         int t_next = t + 1;
-        float nextnonterminal = 1.0 - dones[t_next];
+        float nextnonterminal = 1.0 - terminals[t_next];
+        float nextnotdone = 1.0 - fmaxf(terminals[t_next], truncations[t_next]);
         float rho_t = fminf(importance[t], rho_clip);
         float c_t = fminf(importance[t], c_clip);
         float delta = rho_t*(rewards[t_next] + gamma*values[t_next]*nextnonterminal - values[t]);
-        lastpufferlam = delta + gamma*lambda*c_t*lastpufferlam*nextnonterminal;
+        lastpufferlam = delta + gamma*lambda*c_t*lastpufferlam*nextnotdone;
         advantages[t] = lastpufferlam;
     }
 }
 
-void vtrace_check_cuda(torch::Tensor values, torch::Tensor rewards,
-        torch::Tensor dones, torch::Tensor importance, torch::Tensor advantages,
+void vtrace_check_cuda(torch::Tensor values, torch::Tensor rewards, torch::Tensor terminals,
+        torch::Tensor truncations, torch::Tensor importance, torch::Tensor advantages,
         int num_steps, int horizon) {
 
     // Validate input tensors
     torch::Device device = values.device();
-    for (const torch::Tensor& t : {values, rewards, dones, importance, advantages}) {
+    for (const torch::Tensor& t : {values, rewards, terminals, truncations, importance, advantages}) {
         TORCH_CHECK(t.dim() == 2, "Tensor must be 2D");
         TORCH_CHECK(t.device() == device, "All tensors must be on same device");
         TORCH_CHECK(t.size(0) == num_steps, "First dimension must match num_steps");
@@ -38,24 +39,24 @@ void vtrace_check_cuda(torch::Tensor values, torch::Tensor rewards,
 }
 
  // [num_steps, horizon]
-__global__ void puff_advantage_kernel(float* values, float* rewards,
-        float* dones, float* importance, float* advantages, float gamma,
+__global__ void puff_advantage_kernel(float* values, float* rewards, float* terminals,
+        float* truncations, float* importance, float* advantages, float gamma,
         float lambda, float rho_clip, float c_clip, int num_steps, int horizon) {
     int row = blockIdx.x*blockDim.x + threadIdx.x;
     if (row >= num_steps) {
         return;
     }
     int offset = row*horizon;
-    puff_advantage_row_cuda(values + offset, rewards + offset, dones + offset,
+    puff_advantage_row_cuda(values + offset, rewards + offset, terminals + offset, truncations + offset,
         importance + offset, advantages + offset, gamma, lambda, rho_clip, c_clip, horizon);
 }
 
-void compute_puff_advantage_cuda(torch::Tensor values, torch::Tensor rewards,
-        torch::Tensor dones, torch::Tensor importance, torch::Tensor advantages,
+void compute_puff_advantage_cuda(torch::Tensor values, torch::Tensor rewards, torch::Tensor terminals,
+        torch::Tensor truncations, torch::Tensor importance, torch::Tensor advantages,
         double gamma, double lambda, double rho_clip, double c_clip) {
     int num_steps = values.size(0);
     int horizon = values.size(1);
-    vtrace_check_cuda(values, rewards, dones, importance, advantages, num_steps, horizon);
+    vtrace_check_cuda(values, rewards, terminals, truncations, importance, advantages, num_steps, horizon);
     TORCH_CHECK(values.is_cuda(), "All tensors must be on GPU");
 
     int threads_per_block = 256;
@@ -64,7 +65,8 @@ void compute_puff_advantage_cuda(torch::Tensor values, torch::Tensor rewards,
     puff_advantage_kernel<<<blocks, threads_per_block>>>(
         values.data_ptr<float>(),
         rewards.data_ptr<float>(),
-        dones.data_ptr<float>(),
+        terminals.data_ptr<float>(),
+        truncations.data_ptr<float>(),
         importance.data_ptr<float>(),
         advantages.data_ptr<float>(),
         gamma,

@@ -248,7 +248,6 @@ class PuffeRL:
             profile('eval_misc', epoch)
             env_id = slice(env_id[0], env_id[-1] + 1)
 
-            done_mask = d + t # TODO: Handle truncations separately
             self.global_step += int(mask.sum())
 
             profile('eval_copy', epoch)
@@ -256,12 +255,14 @@ class PuffeRL:
             o_device = o.to(device)#, non_blocking=True)
             r = torch.as_tensor(r).to(device)#, non_blocking=True)
             d = torch.as_tensor(d).to(device)#, non_blocking=True)
+            t = torch.as_tensor(t).to(device)#, non_blocking=True)
 
             profile('eval_forward', epoch)
             with torch.no_grad(), self.amp_context:
                 state = dict(
                     reward=r,
                     done=d,
+                    truncated=t,
                     env_id=env_id,
                     mask=mask,
                 )
@@ -293,6 +294,7 @@ class PuffeRL:
                 self.logprobs[batch_rows, l] = logprob
                 self.rewards[batch_rows, l] = r
                 self.terminals[batch_rows, l] = d.float()
+                self.truncations[batch_rows, l] = t.float()
                 self.values[batch_rows, l] = value.flatten()
 
                 # Note: We are not yet handling masks in this version
@@ -352,7 +354,7 @@ class PuffeRL:
             shape = self.values.shape
             advantages = torch.zeros(shape, device=device)
             advantages = compute_puff_advantage(self.values, self.rewards,
-                self.terminals, self.ratio, advantages, config['gamma'],
+                self.terminals, self.truncations, self.ratio, advantages, config['gamma'],
                 config['gae_lambda'], config['vtrace_rho_clip'], config['vtrace_c_clip'])
 
             # Prioritize experience by advantage magnitude
@@ -657,7 +659,7 @@ class PuffeRL:
 
         print('\033[0;0H' + capture.get())
 
-def compute_puff_advantage(values, rewards, terminals,
+def compute_puff_advantage(values, rewards, terminals, truncations,
         ratio, advantages, gamma, gae_lambda, vtrace_rho_clip, vtrace_c_clip):
     '''CUDA kernel for puffer advantage with automatic CPU fallback. You need
     nvcc (in cuda-dev-tools or in a cuda-dev docker base) for PufferLib to
@@ -668,10 +670,11 @@ def compute_puff_advantage(values, rewards, terminals,
         values = values.cpu()
         rewards = rewards.cpu()
         terminals = terminals.cpu()
+        truncations = truncations.cpu()
         ratio = ratio.cpu()
         advantages = advantages.cpu()
 
-    torch.ops.pufferlib.compute_puff_advantage(values, rewards, terminals,
+    torch.ops.pufferlib.compute_puff_advantage(values, rewards, terminals, truncations,
         ratio, advantages, gamma, gae_lambda, vtrace_rho_clip, vtrace_c_clip)
 
     if not ADVANTAGE_CUDA:
