@@ -46,7 +46,7 @@ size_t PUZZLE_COUNT = 0;
 size_t PUZZLE_SIZE = BOXOBAN_PUZZLE_BYTES;
 size_t PUZZLE_OBS_BYTES = BOXOBAN_PUZZLE_OBS_BYTES;
 static char* BOXOBAN_MAP_PATH = NULL;
-static const char* BOXOBAN_LEVEL_ROOT = "resources/boxoban/levels";
+static const char* BOXOBAN_LEVEL_ROOT = PUFFER_ROOT "/resources/boxoban/levels";
 
 typedef struct {
     char** items;
@@ -324,13 +324,14 @@ static int boxoban_ensure_text_maps(const char* difficulty) {
     return boxoban_download_text_maps(difficulty);
 }
 
-static const char* BOXOBAN_WEB_MAP_BIN = "resources/boxoban/web_maps.bin";
+static const char* BOXOBAN_WEB_MAP_BIN = PUFFER_ROOT "/resources/boxoban/web_maps.bin";
 
 static int boxoban_bin_path(const char* difficulty, char* out_path, size_t out_cap) {
 #ifdef PLATFORM_WEB
     int written = snprintf(out_path, out_cap, "%s", BOXOBAN_WEB_MAP_BIN);
 #else
-    int written = snprintf(out_path, out_cap, "resources/boxoban/boxoban_maps_%s.bin", difficulty);
+    int written = snprintf(out_path, out_cap,
+        PUFFER_ROOT "/resources/boxoban/boxoban_maps_%s.bin", difficulty);
 #endif
     if (written <= 0 || (size_t)written >= out_cap) {
         return -1;
@@ -341,7 +342,7 @@ static int boxoban_bin_path(const char* difficulty, char* out_path, size_t out_c
 #ifndef PLATFORM_WEB
 static int boxoban_legacy_bin_path(const char* difficulty, char* out_path, size_t out_cap) {
     int written = snprintf(out_path, out_cap,
-        "ocean/boxoban/maps/boxoban_maps_%s.bin", difficulty);
+        PUFFER_ROOT "/ocean/boxoban/maps/boxoban_maps_%s.bin", difficulty);
     if (written <= 0 || (size_t)written >= out_cap) {
         return -1;
     }

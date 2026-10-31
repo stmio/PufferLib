@@ -227,7 +227,7 @@ void puf_render(ConvertCircle *env) {
     InitWindow(env->width, env->height, "PufferLib ConvertCircle");
     SetTargetFPS(30);
     env->client = (Client *)calloc(1, sizeof(Client));
-    env->client->sprites = LoadTexture("resources/shared/puffers.png");
+    env->client->sprites = LoadTexture(puf_resource("shared/puffers.png"));
   }
 
   if (IsKeyDown(KEY_ESCAPE)) {

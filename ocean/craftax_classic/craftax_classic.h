@@ -1049,17 +1049,7 @@ static bool cc_textures_loaded = false;
 
 static void cc_load_textures(void) {
     if (cc_textures_loaded) return;
-    const char* candidates[] = {
-        "resources/craftax/textures.png",
-        "../resources/craftax/textures.png",
-        "../../resources/craftax/textures.png",
-    };
-    for (size_t i = 0; i < sizeof(candidates)/sizeof(candidates[0]); i++) {
-        if (FileExists(candidates[i])) {
-            cc_textures = LoadTexture(candidates[i]);
-            break;
-        }
-    }
+    cc_textures = LoadTexture(puf_resource("craftax/textures.png"));
     if (cc_textures.id == 0) {
         fprintf(stderr, "craftax_classic: textures.png not found in resources/craftax\n");
         exit(1);

@@ -11,7 +11,7 @@ typedef unsigned char obs_t;
 #include "pufferenv.h"
 
 #define BOARD_IDX(cols, r, c) ((r) * (cols) + (c))
-#define LASER_PUZZLE_LEVELS_PATH "resources/laser_puzzle/laser_puzzle_levels.bin"
+#define LASER_PUZZLE_LEVELS_PATH puf_resource("laser_puzzle/laser_puzzle_levels.bin")
 
 // observations: 6*6 board, one byte per cell:
 // 0 empty, 1-8 laser ids 0-7, 9-16 sensor ids 0-7, 17 mirror /, 18 mirror \'
@@ -127,8 +127,8 @@ Client* make_client() {
     InitWindow(800, 700, "laser puzzle");
     SetTargetFPS(60);
 
-    client->sprites = LoadTexture("resources/shared/puffers.png");
-    client->font = LoadFontEx("resources/shared/JetBrainsMono-SemiBold.ttf", 32, NULL, 0);
+    client->sprites = LoadTexture(puf_resource("shared/puffers.png"));
+    client->font = LoadFontEx(puf_resource("shared/JetBrainsMono-SemiBold.ttf"), 32, NULL, 0);
     client->assets_loaded = 1;
     return client;
 }

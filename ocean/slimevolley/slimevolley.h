@@ -548,7 +548,7 @@ void puf_render(SlimeVolley* env) {
         SetConfigFlags(FLAG_MSAA_4X_HINT);
         InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "PufferLib SlimeVolley");
         SetTargetFPS(50); // From original
-        env->puffers = LoadTexture("resources/shared/puffers.png");
+        env->puffers = LoadTexture(puf_resource("shared/puffers.png"));
     }
 
     // Standard across our envs so exiting is always the same

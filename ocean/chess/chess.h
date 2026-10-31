@@ -2864,7 +2864,7 @@ static void init_chess_client(Chess* env, int cell_size) {
     // pieces.png: "Chess Pieces Sprite" by Jurgenwesterhof, adapted from Cburnett; unmodified PNG reproduction.
     // Artwork license: CC BY-SA 3.0, https://creativecommons.org/licenses/by-sa/3.0/
     // Source: https://commons.wikimedia.org/wiki/File:Chess_Pieces_Sprite.svg
-    Image image = LoadImage("resources/chess/pieces.png");
+    Image image = LoadImage(puf_resource("chess/pieces.png"));
     if (image.data && image.width % 6 == 0 && image.height == image.width / 3) {
         env->client->pieces = LoadTextureFromImage(image);
         if (env->client->pieces.id != 0) {
@@ -3288,7 +3288,7 @@ void puf_close(Chess* env) {
 }
 
 #define DEFAULT_STARTING_FEN "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-#define FEN_CURRICULUM_PATH "resources/chess/fens.txt"
+#define FEN_CURRICULUM_PATH puf_resource("chess/fens.txt")
 
 static char** SHARED_FEN_CURRICULUM = NULL;
 static int SHARED_NUM_FENS = 0;

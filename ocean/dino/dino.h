@@ -104,10 +104,10 @@ Client* make_client(Dinosaur* env){
     InitWindow(env->width, env->height, "Pufferlib Dinosaur");
     SetTargetFPS(60);
 
-    client->cactus = LoadTexture("resources/dino/cactus.png");
-    client->bird = LoadTexture("resources/dino/bird.png");
-    client->dinosaur_up = LoadTexture("resources/dino/dino.png");
-    client->dinosaur_down = LoadTexture("resources/dino/dino_down.png");
+    client->cactus = LoadTexture(puf_resource("dino/cactus.png"));
+    client->bird = LoadTexture(puf_resource("dino/bird.png"));
+    client->dinosaur_up = LoadTexture(puf_resource("dino/dino.png"));
+    client->dinosaur_down = LoadTexture(puf_resource("dino/dino_down.png"));
     return client;
 }
 

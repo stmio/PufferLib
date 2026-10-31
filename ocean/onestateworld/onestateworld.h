@@ -114,7 +114,7 @@ void puf_render(World* env) {
     if (!IsWindowReady()) {
         InitWindow(px * 5, px * 5, "PufferLib OneStateWorld");
         SetTargetFPS(1);
-        env->puffer = LoadTexture("resources/shared/puffers_128.png");
+        env->puffer = LoadTexture(puf_resource("shared/puffers_128.png"));
     }
 
     if (IsKeyDown(KEY_ESCAPE)) {

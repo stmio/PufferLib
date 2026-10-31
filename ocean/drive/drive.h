@@ -1260,13 +1260,13 @@ Client* make_client(Drive* env) {
     SetConfigFlags(FLAG_MSAA_4X_HINT);
     InitWindow(client->width, client->height, "PufferLib Ray GPU Drive");
     SetTargetFPS(30);
-    client->puffers = LoadTexture("resources/puffers_128.png");
-    client->cars[0] = LoadModel("resources/drive/RedCar.glb");
-    client->cars[1] = LoadModel("resources/drive/WhiteCar.glb");
-    client->cars[2] = LoadModel("resources/drive/BlueCar.glb");
-    client->cars[3] = LoadModel("resources/drive/YellowCar.glb");
-    client->cars[4] = LoadModel("resources/drive/GreenCar.glb");
-    client->cars[5] = LoadModel("resources/drive/GreyCar.glb");
+    client->puffers = LoadTexture(puf_resource("shared/puffers_128.png"));
+    client->cars[0] = LoadModel(puf_resource("drive/RedCar.glb"));
+    client->cars[1] = LoadModel(puf_resource("drive/WhiteCar.glb"));
+    client->cars[2] = LoadModel(puf_resource("drive/BlueCar.glb"));
+    client->cars[3] = LoadModel(puf_resource("drive/YellowCar.glb"));
+    client->cars[4] = LoadModel(puf_resource("drive/GreenCar.glb"));
+    client->cars[5] = LoadModel(puf_resource("drive/GreyCar.glb"));
     for (int i = 0; i < MAX_AGENTS; i++) {
         client->car_assignments[i] = (rand_r(&env->rng) % 4) + 1;
     }
@@ -1658,7 +1658,7 @@ void close_client(Client* client) {
 }
 
 #define MAP_BINARY_DIR "drive_data/binaries"
-#define MAP_RESOURCE_DIR "resources/drive"
+#define MAP_RESOURCE_DIR PUFFER_ROOT "/resources/drive"
 
 static int drive_map_exists(const char* path) {
     FILE* fp = fopen(path, "rb");

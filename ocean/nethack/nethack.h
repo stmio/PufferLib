@@ -191,7 +191,7 @@ static void nethack_bind_obs(Nethack* env) {
 static void nethack_init_settings(Nethack* env) {
     memset(&env->settings, 0, sizeof(env->settings));
     const char* source = getenv("NETHACKDIR");
-    if (source == NULL) source = "./vendor/fast-nle/build/dat";
+    if (source == NULL) source = PUFFER_ROOT "/vendor/fast-nle/build/dat";
 
     if (nethack_make_vardir(source, env->vardir, sizeof(env->vardir)) != 0) {
         fprintf(stderr, "nethack: failed to create vardir from source=%s\n", source);

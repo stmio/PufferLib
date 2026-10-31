@@ -14,7 +14,7 @@
 static int g_ra_no_timeout;
 static int g_ra_stack;
 static int g_ra_basketball;
-static const char* g_ra_model_glb = "resources/robot_arm/franka_panda.glb";
+static const char* g_ra_model_glb = PUFFER_ROOT "/resources/robot_arm/franka_panda.glb";
 static RaRenderHost g_ra_render_host;
 
 static struct {

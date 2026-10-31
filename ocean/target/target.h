@@ -186,8 +186,8 @@ void puf_render(Target* env) {
         InitWindow(1080, 720, "PufferLib Target");
         SetTargetFPS(60);
         env->client = (Client*)calloc(1, sizeof(Client));
-        env->client->puffer = LoadTexture("resources/shared/puffers_128.png");
-        env->client->star = LoadTexture("resources/shared/star.png");
+        env->client->puffer = LoadTexture(puf_resource("shared/puffers_128.png"));
+        env->client->star = LoadTexture(puf_resource("shared/star.png"));
     }
 
     if (IsKeyDown(KEY_ESCAPE)) {

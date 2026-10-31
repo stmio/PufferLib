@@ -662,9 +662,9 @@ static Vector2 cell_center(int cell) {
 }
 
 void renderer_init(TronRenderer *renderer, const TronGame *game) {
-    renderer->cycle = LoadTexture("resources/tron/light_cycle.png");
-    renderer->puffer = LoadTexture("resources/shared/puffers_128.png");
-    renderer->crash = LoadTexture("resources/tron/crash_burst.png");
+    renderer->cycle = LoadTexture(puf_resource("tron/light_cycle.png"));
+    renderer->puffer = LoadTexture(puf_resource("shared/puffers_128.png"));
+    renderer->crash = LoadTexture(puf_resource("tron/crash_burst.png"));
     SetTextureFilter(renderer->cycle, TEXTURE_FILTER_POINT);
     SetTextureFilter(renderer->puffer, TEXTURE_FILTER_BILINEAR);
     SetTextureFilter(renderer->crash, TEXTURE_FILTER_POINT);

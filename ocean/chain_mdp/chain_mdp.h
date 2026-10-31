@@ -102,7 +102,7 @@ void puf_render(Chain* env) {
     if (!IsWindowReady()) {
         InitWindow(px * env->size, px * 5, "PufferLib Chain MDP");
         SetTargetFPS(4);
-        env->puffer = LoadTexture("resources/shared/puffers_128.png");
+        env->puffer = LoadTexture(puf_resource("shared/puffers_128.png"));
     }
 
     if (IsKeyDown(KEY_ESCAPE)) {

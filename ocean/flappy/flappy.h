@@ -252,7 +252,7 @@ void puf_render(Flappy* env) {
         env->client = (Client*)calloc(1, sizeof(Client));
         InitWindow(env->width, env->height, "PufferLib Flappy");
         SetTargetFPS(60);
-        env->client->puffer = LoadTexture("resources/shared/puffers_128.png");
+        env->client->puffer = LoadTexture(puf_resource("shared/puffers_128.png"));
     }
 
     if (IsKeyDown(KEY_ESCAPE)) {

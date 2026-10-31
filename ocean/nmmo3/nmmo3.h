@@ -2590,7 +2590,7 @@ Client* make_client(MMO* env) {
     client->terrain = (int*)calloc(env->height*env->width, sizeof(int));
     render_conversion(env->terrain, client->terrain, env->height, env->width, &env->rng);
 
-    client->shader = LoadShader("", TextFormat("resources/nmmo3/map_shader_%i.fs", GLSL_VERSION));
+    client->shader = LoadShader("", puf_resource("nmmo3/map_shader_%i.fs", GLSL_VERSION));
 
     // TODO: These should be int locs?
     client->shader_map_width_loc = GetShaderLocation(client->shader, "map_width");
@@ -2625,20 +2625,20 @@ Client* make_client(MMO* env) {
     UpdateTexture(client->shader_terrain, client->shader_terrain_data);
 
     client->render_mode = RENDER_MODE_CENTERED;
-    client->tiles = LoadTexture("resources/nmmo3/merged_sheet.png");
+    client->tiles = LoadTexture(puf_resource("nmmo3/merged_sheet.png"));
 
     //client->players = LoadTexture("../resource/neutral_0.png");
-    client->items = LoadTexture("resources/nmmo3/items_condensed.png");
-    client->inventory = LoadTexture("resources/nmmo3/inventory_64.png");
-    client->inventory_equip = LoadTexture("resources/nmmo3/inventory_64_selected.png");
-    client->inventory_selected = LoadTexture("resources/nmmo3/inventory_64_press.png");
-    client->font = LoadFont("resources/nmmo3/ManaSeedBody.ttf");
+    client->items = LoadTexture(puf_resource("nmmo3/items_condensed.png"));
+    client->inventory = LoadTexture(puf_resource("nmmo3/inventory_64.png"));
+    client->inventory_equip = LoadTexture(puf_resource("nmmo3/inventory_64_selected.png"));
+    client->inventory_selected = LoadTexture(puf_resource("nmmo3/inventory_64_press.png"));
+    client->font = LoadFont(puf_resource("nmmo3/ManaSeedBody.ttf"));
     for (int i = 0; i < NUM_PLAYER_TEXTURES; i++) {
-        client->players[0][i] = LoadTexture(TextFormat("resources/nmmo3/neutral_%d.png", i));
-        client->players[1][i] = LoadTexture(TextFormat("resources/nmmo3/fire_%d.png", i));
-        client->players[2][i] = LoadTexture(TextFormat("resources/nmmo3/water_%d.png", i));
-        client->players[3][i] = LoadTexture(TextFormat("resources/nmmo3/earth_%d.png", i));
-        client->players[4][i] = LoadTexture(TextFormat("resources/nmmo3/air_%d.png", i));
+        client->players[0][i] = LoadTexture(puf_resource("nmmo3/neutral_%d.png", i));
+        client->players[1][i] = LoadTexture(puf_resource("nmmo3/fire_%d.png", i));
+        client->players[2][i] = LoadTexture(puf_resource("nmmo3/water_%d.png", i));
+        client->players[3][i] = LoadTexture(puf_resource("nmmo3/earth_%d.png", i));
+        client->players[4][i] = LoadTexture(puf_resource("nmmo3/air_%d.png", i));
     }
 
     // TODO: Why do I need to cast here?

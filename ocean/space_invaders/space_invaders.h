@@ -507,7 +507,7 @@ Client* make_client(SpaceInvaders* env) {
     client->height = env->height;
     InitWindow(env->width, env->height, "PufferLib Space Invaders");
     SetTargetFPS(60);
-    client->sprites = LoadTexture("resources/space_invaders/sprites.png");
+    client->sprites = LoadTexture(puf_resource("space_invaders/sprites.png"));
     return client;
 }
 

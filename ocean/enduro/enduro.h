@@ -1787,7 +1787,7 @@ void initRaylib(GameState* gameState) {
 
 void loadTextures(GameState* gameState) { 
     // Load background and mountain textures for different times of day per original env
-    gameState->spritesheet = LoadTexture("resources/enduro/enduro_spritesheet.png");
+    gameState->spritesheet = LoadTexture(puf_resource("enduro/enduro_spritesheet.png"));
     
     // Initialize animation variables
     gameState->carAnimationTimer = 0.0f;

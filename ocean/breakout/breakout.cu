@@ -740,7 +740,7 @@ void puf_render(Env* env) {
         client->height = c->height;
         InitWindow(c->width, c->height, "PufferLib Breakout (GPU)");
         SetTargetFPS(60 / (c->frameskip > 0 ? c->frameskip : 1));
-        client->ball = LoadTexture("resources/shared/puffers_128.png");
+        client->ball = LoadTexture(puf_resource("shared/puffers_128.png"));
         g_gpu.client = client;
     }
     BreakoutClient* client = g_gpu.client;
