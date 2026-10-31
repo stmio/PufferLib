@@ -2753,17 +2753,7 @@ void puf_render(Craftax* env) {
         client->window_ready = true;
     }
     if (!textures_loaded) {
-        const char* candidates[] = {
-            "resources/craftax/textures.png",
-            "../resources/craftax/textures.png",
-            "../../resources/craftax/textures.png",
-        };
-        for (size_t i = 0; i < sizeof(candidates) / sizeof(candidates[0]); i++) {
-            if (FileExists(candidates[i])) {
-                textures = LoadTexture(candidates[i]);
-                break;
-            }
-        }
+        textures = LoadTexture(puf_resource("craftax/textures.png"));
         if (textures.id == 0) {
             fprintf(stderr, "craftax textures.png not found in resources/craftax\n");
             exit(1);

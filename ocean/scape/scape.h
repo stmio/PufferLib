@@ -374,7 +374,7 @@ void puf_render(Scape* env) {
         env->client = client;
 
         // Don't do this before calling InitWindow
-        client->puffer = LoadTexture("resources/shared/puffers_128.png");
+        client->puffer = LoadTexture(puf_resource("shared/puffers_128.png"));
 
         Camera3D camera = { 0 };
         camera.position = (Vector3){ 28.0f, 10.0f, 12.0f };
@@ -385,8 +385,8 @@ void puf_render(Scape* env) {
         camera.fovy = 70.0f;
         camera.projection = CAMERA_PERSPECTIVE;
         client->camera = camera;
-        client->scene = LoadModel("resources/scape/inferno_compress.glb");
-        client->player = LoadModel("resources/scape/player_twisted_bow_decompressed.glb");
+        client->scene = LoadModel(puf_resource("scape/inferno_compress.glb"));
+        client->player = LoadModel(puf_resource("scape/player_twisted_bow_decompressed.glb"));
     }
 
     handle_camera_controls(client);

@@ -279,6 +279,14 @@ cp "$TMP/fx/withtests/tests/goal.c" "$TMP/with space/spaced/tests/goal.c"
 "$TMP/build/test_spaced" --test.seeds=1 --test.steps=50 | grep -q '1 env tests'
 EOF
 
+# Ocean envs resolve assets through puf_resource, never relative to the cwd.
+t "no cwd-relative resources/ or ocean/ literals in env code" <<'EOF'
+cd "$ROOT/ocean"
+grep -rn '"\(\./\)\?\(resources\|ocean\)/' . --include='*.h' --include='*.c' --include='*.cu' \
+    | grep -v '/tests/\|/tools/\|^[^:]*:[0-9]*:[[:space:]]*//' > "$TMP/out.txt" || true
+test ! -s "$TMP/out.txt" || { cat "$TMP/out.txt"; exit 1; }
+EOF
+
 rm -rf "$ROOT/ocean/breakout/build" "$ROOT/ocean/template/build"
 echo "$PASS passed, $FAIL failed"
 [ "$FAIL" -eq 0 ]

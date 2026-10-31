@@ -136,7 +136,7 @@ void puf_render(TMaze* env) {
     if (!IsWindowReady()) {
         InitWindow(px * env->size, px * 5, "PufferLib TMaze MDP");
         SetTargetFPS(60);
-        env->puffer = LoadTexture("resources/shared/puffers_128.png");
+        env->puffer = LoadTexture(puf_resource("shared/puffers_128.png"));
     }
 
     if (IsKeyDown(KEY_ESCAPE)) {

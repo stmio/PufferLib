@@ -151,15 +151,15 @@ void puf_render(Whackamole* env) {
         InitWindow(CELL_SIZE * GRID_SIZE, CELL_SIZE * GRID_SIZE, "PufferLib WhacKe-a-PUFFER");
         SetTargetFPS(60);
         env->client = (Client*)calloc(1, sizeof(Client));
-        env->client->puffer = LoadTexture("resources/whackamole/pufferfish.png");
+        env->client->puffer = LoadTexture(puf_resource("whackamole/pufferfish.png"));
         if (env->client->puffer.id == 0) {
-            env->client->puffer = LoadTexture("ocean/whackamole/pufferfish.png");
+            env->client->puffer = LoadTexture(PUFFER_ROOT "/ocean/whackamole/pufferfish.png");
         }
         if (env->client->puffer.id == 0) {
             env->client->puffer = LoadTexture("pufferfish.png");
         }
         if (env->client->puffer.id == 0) {
-            env->client->puffer = LoadTexture("resources/shared/puffers_128.png");
+            env->client->puffer = LoadTexture(puf_resource("shared/puffers_128.png"));
         }
         env->client->show_flash = false;
         env->client->flash_timer = 0;

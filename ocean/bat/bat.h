@@ -1474,7 +1474,7 @@ Client* make_client(Bat* env) {
     clear_freq_history(client);
     InitWindow(client->width, client->height, "Bat");
     SetTargetFPS(env->render_target_fps > 0 ? env->render_target_fps : 60);
-    client->puffer = LoadTexture("resources/shared/puffers_128.png");
+    client->puffer = LoadTexture(puf_resource("shared/puffers_128.png"));
 #ifdef PLATFORM_WEB
     // InitAudioDevice waits for a click and stalls the first rAF.
     client->audio_ready = 0;

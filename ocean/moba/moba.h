@@ -2069,12 +2069,12 @@ GameRenderer* init_game_renderer(int cell_size, int width, int height) {
     renderer->slow_uv = (Rectangle){128, 128, 128, 128};
     renderer->speed_uv = (Rectangle){256, 128, 128, 128};
 
-    renderer->game_map = LoadTexture("resources/moba/dota_map.png");
-    renderer->puffer = LoadTexture("resources/moba/moba_assets.png");
+    renderer->game_map = LoadTexture(puf_resource("moba/dota_map.png"));
+    renderer->puffer = LoadTexture(puf_resource("moba/moba_assets.png"));
     renderer->shader_background = GenImageColor(2560, 1440, (Color){0, 0, 0, 255});
     renderer->shader_canvas = LoadTextureFromImage(renderer->shader_background);
-    renderer->shader = LoadShader(0, TextFormat("resources/moba/map_shader_%i.fs", GLSL_VERSION));
-    renderer->bloom_shader = LoadShader(0, TextFormat("resources/moba/bloom_shader_%i.fs", GLSL_VERSION));
+    renderer->shader = LoadShader(0, puf_resource("moba/map_shader_%i.fs", GLSL_VERSION));
+    renderer->bloom_shader = LoadShader(0, puf_resource("moba/bloom_shader_%i.fs", GLSL_VERSION));
 
     // TODO: These should be int locs?
     renderer->shader_camera_x = GetShaderLocation(renderer->shader, "camera_x");

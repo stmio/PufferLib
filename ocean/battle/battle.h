@@ -1140,21 +1140,19 @@ void puf_render(Battle* env) {
         SetTargetFPS(30);
         Client* client = (Client*)calloc(1, sizeof(Client));
         env->client = client;
-        client->models[DRONE] = LoadModel("resources/battle/drone.glb");
-        client->models[FIGHTER] = LoadModel("resources/battle/fighter.glb");
-        client->models[MOTHERSHIP] = LoadModel("resources/battle/mothership.glb");
-        client->models[BOMBER] = LoadModel("resources/battle/bomber.glb");
-        client->models[INFANTRY] = LoadModel("resources/battle/car.glb");
-        client->models[TANK] = LoadModel("resources/battle/tank.glb");
-        client->models[ARTILLERY] = LoadModel("resources/battle/artillery.glb");
-        client->models[BASE] = LoadModel("resources/battle/base.glb");
+        client->models[DRONE] = LoadModel(puf_resource("battle/drone.glb"));
+        client->models[FIGHTER] = LoadModel(puf_resource("battle/fighter.glb"));
+        client->models[MOTHERSHIP] = LoadModel(puf_resource("battle/mothership.glb"));
+        client->models[BOMBER] = LoadModel(puf_resource("battle/bomber.glb"));
+        client->models[INFANTRY] = LoadModel(puf_resource("battle/car.glb"));
+        client->models[TANK] = LoadModel(puf_resource("battle/tank.glb"));
+        client->models[ARTILLERY] = LoadModel(puf_resource("battle/artillery.glb"));
+        client->models[BASE] = LoadModel(puf_resource("battle/base.glb"));
         //env->client->ship = LoadModel("resources/puffer.glb");
         
-        char vsPath[256];
-        char fsPath[256];
-        sprintf(vsPath, "resources/battle/shaders/gls%i/lighting.vs", GLSL_VERSION);
-        sprintf(fsPath, "resources/battle/shaders/gls%i/lighting.fs", GLSL_VERSION);
-        client->light_shader = LoadShader(vsPath, fsPath);
+        client->light_shader = LoadShader(
+            puf_resource("battle/shaders/gls%i/lighting.vs", GLSL_VERSION),
+            puf_resource("battle/shaders/gls%i/lighting.fs", GLSL_VERSION));
         client->light = CreateLight(LIGHT_DIRECTIONAL, 
             (Vector3){ 0.0f, 10.0f, 0.0f },    // High above for top lighting
             (Vector3){ 0.5f, -1.0f, 0.3f },    // Direction: down and slightly forward
@@ -1182,8 +1180,8 @@ void puf_render(Battle* env) {
         update_heightmap_mesh(client->mesh, env->terrain, (Vector3){env->terrain_width, 1, env->terrain_height});
 
         client->terrain_shader = LoadShader(
-            TextFormat("resources/battle/shader_%i.vs", GLSL_VERSION),
-            TextFormat("resources/battle/shader_%i.fs", GLSL_VERSION)
+            puf_resource("battle/shader_%i.vs", GLSL_VERSION),
+            puf_resource("battle/shader_%i.fs", GLSL_VERSION)
         );
 
         Image img = GenImageColor(env->terrain_width, env->terrain_height, WHITE);

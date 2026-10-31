@@ -311,7 +311,7 @@ void puf_render(OnlyFish* env) {
         InitWindow(env->width, env->height, "PufferLib OnlyFish");
         SetTargetFPS(60);
         env->client = (Client*)calloc(1, sizeof(Client));
-        env->client->spritesheet = LoadTexture("resources/shared/puffers.png");
+        env->client->spritesheet = LoadTexture(puf_resource("shared/puffers.png"));
     }
 
     if (IsKeyDown(KEY_ESCAPE)) {

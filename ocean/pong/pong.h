@@ -251,7 +251,7 @@ Client* make_client(Pong* env) {
     InitWindow(env->width + 2 * client->x_pad, env->height, "PufferLib Pong");
     SetTargetFPS(60 / (env->frameskip > 0 ? env->frameskip : 1));
 
-    client->ball = LoadTexture("resources/shared/puffers_128.png");
+    client->ball = LoadTexture(puf_resource("shared/puffers_128.png"));
     return client;
 }
 

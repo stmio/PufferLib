@@ -571,7 +571,7 @@ Client* make_client(Breakout* env) {
     InitWindow(env->width, env->height, "PufferLib Breakout");
     SetTargetFPS(60 / env->frameskip);
 
-    client->ball = LoadTexture("resources/shared/puffers_128.png");
+    client->ball = LoadTexture(puf_resource("shared/puffers_128.png"));
     return client;
 }
 

@@ -643,34 +643,34 @@ Client *make_client(PacmanEnv *env) {
                "PufferLib Pacman");
     SetTargetFPS(60);
 
-    client->tileset = LoadTexture("resources/pacman/tileset.png");
-    client->pacman = LoadTexture("resources/shared/puffers_128.png");
-    client->frightened = LoadTexture("resources/pacman/scared.png");
+    client->tileset = LoadTexture(puf_resource("pacman/tileset.png"));
+    client->pacman = LoadTexture(puf_resource("shared/puffers_128.png"));
+    client->frightened = LoadTexture(puf_resource("pacman/scared.png"));
 
-    client->ghost_sprites[0].up = LoadTexture("resources/pacman/pinky_up.png");
-    client->ghost_sprites[0].down = LoadTexture("resources/pacman/pinky_down.png");
-    client->ghost_sprites[0].left = LoadTexture("resources/pacman/pinky_left.png");
-    client->ghost_sprites[0].right = LoadTexture("resources/pacman/pinky_right.png");
+    client->ghost_sprites[0].up = LoadTexture(puf_resource("pacman/pinky_up.png"));
+    client->ghost_sprites[0].down = LoadTexture(puf_resource("pacman/pinky_down.png"));
+    client->ghost_sprites[0].left = LoadTexture(puf_resource("pacman/pinky_left.png"));
+    client->ghost_sprites[0].right = LoadTexture(puf_resource("pacman/pinky_right.png"));
 
-    client->ghost_sprites[1].up = LoadTexture("resources/pacman/blinky_up.png");
-    client->ghost_sprites[1].down = LoadTexture("resources/pacman/blinky_down.png");
-    client->ghost_sprites[1].left = LoadTexture("resources/pacman/blinky_left.png");
-    client->ghost_sprites[1].right = LoadTexture("resources/pacman/blinky_right.png");
+    client->ghost_sprites[1].up = LoadTexture(puf_resource("pacman/blinky_up.png"));
+    client->ghost_sprites[1].down = LoadTexture(puf_resource("pacman/blinky_down.png"));
+    client->ghost_sprites[1].left = LoadTexture(puf_resource("pacman/blinky_left.png"));
+    client->ghost_sprites[1].right = LoadTexture(puf_resource("pacman/blinky_right.png"));
 
-    client->ghost_sprites[2].up = LoadTexture("resources/pacman/inky_up.png");
-    client->ghost_sprites[2].down = LoadTexture("resources/pacman/inky_down.png");
-    client->ghost_sprites[2].left = LoadTexture("resources/pacman/inky_left.png");
-    client->ghost_sprites[2].right = LoadTexture("resources/pacman/inky_right.png");
+    client->ghost_sprites[2].up = LoadTexture(puf_resource("pacman/inky_up.png"));
+    client->ghost_sprites[2].down = LoadTexture(puf_resource("pacman/inky_down.png"));
+    client->ghost_sprites[2].left = LoadTexture(puf_resource("pacman/inky_left.png"));
+    client->ghost_sprites[2].right = LoadTexture(puf_resource("pacman/inky_right.png"));
 
-    client->ghost_sprites[3].up = LoadTexture("resources/pacman/clyde_up.png");
-    client->ghost_sprites[3].down = LoadTexture("resources/pacman/clyde_down.png");
-    client->ghost_sprites[3].left = LoadTexture("resources/pacman/clyde_left.png");
-    client->ghost_sprites[3].right = LoadTexture("resources/pacman/clyde_right.png");
+    client->ghost_sprites[3].up = LoadTexture(puf_resource("pacman/clyde_up.png"));
+    client->ghost_sprites[3].down = LoadTexture(puf_resource("pacman/clyde_down.png"));
+    client->ghost_sprites[3].left = LoadTexture(puf_resource("pacman/clyde_left.png"));
+    client->ghost_sprites[3].right = LoadTexture(puf_resource("pacman/clyde_right.png"));
 
-    client->eyes.up = LoadTexture("resources/pacman/eyes_up.png");
-    client->eyes.down = LoadTexture("resources/pacman/eyes_down.png");
-    client->eyes.left = LoadTexture("resources/pacman/eyes_left.png");
-    client->eyes.right = LoadTexture("resources/pacman/eyes_right.png");
+    client->eyes.up = LoadTexture(puf_resource("pacman/eyes_up.png"));
+    client->eyes.down = LoadTexture(puf_resource("pacman/eyes_down.png"));
+    client->eyes.left = LoadTexture(puf_resource("pacman/eyes_left.png"));
+    client->eyes.right = LoadTexture(puf_resource("pacman/eyes_right.png"));
 
     return client;
 }

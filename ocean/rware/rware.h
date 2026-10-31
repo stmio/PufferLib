@@ -739,7 +739,7 @@ Client* make_client(CRware* env) {
     client->tick = 0;
     InitWindow(env->width, env->height, "PufferLib Ray RWare");
     SetTargetFPS(60);
-    client->puffers = LoadTexture("resources/shared/puffers_128.png");
+    client->puffers = LoadTexture(puf_resource("shared/puffers_128.png"));
     return client;
 }
 

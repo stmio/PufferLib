@@ -15,7 +15,8 @@ typedef float obs_t;
 #define MAX_SOLUTION_DEPTH 16
 #define CURRICULUM_DEPTH_COUNT 6
 #define STEP_REWARD (-0.01f) // TODO should this be in ini so it can be swept?
-#define VISIBLE_TARGET_TABLE_PATH "ocean/affine_lock/generated/affine_lock_8action_visible_targets.bin"
+#define VISIBLE_TARGET_TABLE_PATH \
+    PUFFER_ROOT "/ocean/affine_lock/generated/affine_lock_8action_visible_targets.bin"
 #define ACT_SIZES {NUM_ACTIONS}
 #define PUF_STEPS_PER_SEC 2
 

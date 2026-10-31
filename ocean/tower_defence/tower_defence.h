@@ -79,10 +79,6 @@ typedef float obs_t;
 #define TD_MAX_IMPACT_EVENTS 64
 #define TD_TOWER_MASK_WORDS ((TD_NUM_PLACEMENT_SLOTS + 63) / 64)
 
-#ifndef TD_RESOURCE_DIR
-#define TD_RESOURCE_DIR "resources/tower_defence"
-#endif
-
 enum TdActionId {
     TD_ACTION_NOOP = 0,
     TD_ACTION_PLACE_FIRST = 1,
@@ -1791,9 +1787,7 @@ static Color td_enemy_color(int type) {
 }
 
 static Texture2D td_load_texture(const char *file_name) {
-    char path[256];
-    snprintf(path, sizeof(path), "%s/%s", TD_RESOURCE_DIR, file_name);
-    return LoadTexture(path);
+    return LoadTexture(puf_resource("tower_defence/%s", file_name));
 }
 
 static int td_texture_loaded(Texture2D texture) {

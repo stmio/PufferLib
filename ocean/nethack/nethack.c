@@ -945,9 +945,9 @@ static double demo_now(void) {
 static const char* demo_find_weights(void) {
     const char* envw = getenv("NH_WEIGHTS");
     if (!envw || !envw[0] || strcmp(envw, "score") == 0)
-        return "resources/nethack/nethack_score_weights.bin";
+        return puf_resource("nethack/nethack_score_weights.bin");
     if (strcmp(envw, "depth") == 0)
-        return "resources/nethack/nethack_depth_weights.bin";
+        return puf_resource("nethack/nethack_depth_weights.bin");
     return envw;
 }
 

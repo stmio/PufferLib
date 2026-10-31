@@ -118,7 +118,7 @@ rayClient *createRayClient() {
     };
     client->camera->orthographic = false;
 
-    client->wallTexture = LoadTexture("resources/impulse_wars/wall_texture_map.png");
+    client->wallTexture = LoadTexture(puf_resource("impulse_wars/wall_texture_map.png"));
     client->blurSrcTexture = LoadRenderTexture(client->width, client->height);
     client->blurDstTexture = LoadRenderTexture(client->width, client->height);
     client->droneRawTex = LoadRenderTexture(client->width, client->height);
@@ -126,22 +126,22 @@ rayClient *createRayClient() {
     client->projRawTex = LoadRenderTexture(client->width, client->height);
     client->projBloomTex = LoadRenderTexture(client->width, client->height);
 
-    const char *gridVSPath = TextFormat("resources/impulse_wars/shaders/gls%i/shader.vs", GLSL_VERSION);
-    const char *gridFSPath = TextFormat("resources/impulse_wars/shaders/gls%i/grid.fs", GLSL_VERSION);
-    client->gridShader = LoadShader(gridVSPath, gridFSPath);
+    client->gridShader = LoadShader(
+        puf_resource("impulse_wars/shaders/gls%i/shader.vs", GLSL_VERSION),
+        puf_resource("impulse_wars/shaders/gls%i/grid.fs", GLSL_VERSION));
     for (int i = 0; i < 4; i++) {
         client->gridShaderPosLoc[i] = GetShaderLocation(client->gridShader, TextFormat("pos[%i]", i));
         client->gridShaderColorLoc[i] = GetShaderLocation(client->gridShader, TextFormat("color[%i]", i));
     }
 
-    const char *blurVSPath = TextFormat("resources/impulse_wars/shaders/gls%i/shader.vs", GLSL_VERSION);
-    const char *blurFSPath = TextFormat("resources/impulse_wars/shaders/gls%i/blur.fs", GLSL_VERSION);
-    client->blurShader = LoadShader(blurVSPath, blurFSPath);
+    client->blurShader = LoadShader(
+        puf_resource("impulse_wars/shaders/gls%i/shader.vs", GLSL_VERSION),
+        puf_resource("impulse_wars/shaders/gls%i/blur.fs", GLSL_VERSION));
     client->blurShaderDirLoc = GetShaderLocation(client->blurShader, "uTexelDir");
 
-    const char *bloomVSPath = TextFormat("resources/impulse_wars/shaders/gls%i/shader.vs", GLSL_VERSION);
-    const char *bloomFSPath = TextFormat("resources/impulse_wars/shaders/gls%i/bloom.fs", GLSL_VERSION);
-    client->bloomShader = LoadShader(bloomVSPath, bloomFSPath);
+    client->bloomShader = LoadShader(
+        puf_resource("impulse_wars/shaders/gls%i/shader.vs", GLSL_VERSION),
+        puf_resource("impulse_wars/shaders/gls%i/bloom.fs", GLSL_VERSION));
     int32_t bloomModeLoc = GetShaderLocation(client->bloomShader, "uBloomMode");
     const int32_t bloomMode = 1;
     SetShaderValue(client->bloomShader, bloomModeLoc, &bloomMode, SHADER_UNIFORM_INT);

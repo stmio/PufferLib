@@ -525,12 +525,12 @@ Client* make_client(Freeway* env) {
     
     InitWindow(env->width, env->height, "PufferLib Freeway");
     SetTargetFPS(60/env->frameskip);
-    client->car_body = freeway_load_tex("resources/freeway/tex_car_body.png");
-    client->car_wheels = freeway_load_tex("resources/freeway/tex_car_wheels.png");
-    client->chicken = freeway_load_tex("resources/freeway/tex_chicken0.png");
-    client->puffer = freeway_load_tex("resources/shared/puffers.png");
-    client->truck_body = freeway_load_tex("resources/freeway/tex_truck_body.png");
-    client->truck_wheels = freeway_load_tex("resources/freeway/tex_truck_wheels.png");
+    client->car_body = freeway_load_tex(puf_resource("freeway/tex_car_body.png"));
+    client->car_wheels = freeway_load_tex(puf_resource("freeway/tex_car_wheels.png"));
+    client->chicken = freeway_load_tex(puf_resource("freeway/tex_chicken0.png"));
+    client->puffer = freeway_load_tex(puf_resource("shared/puffers.png"));
+    client->truck_body = freeway_load_tex(puf_resource("freeway/tex_truck_body.png"));
+    client->truck_wheels = freeway_load_tex(puf_resource("freeway/tex_truck_wheels.png"));
     return client;
 }
 

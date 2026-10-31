@@ -294,7 +294,7 @@ void puf_render(ClickEnv* env) {
         env->client->width  = env->width;
         env->client->height = env->height;
         env->client->frame  = 0;
-        env->client->puffer = LoadTexture("resources/shared/puffers_128.png");
+        env->client->puffer = LoadTexture(puf_resource("shared/puffers_128.png"));
         env->client->puffer_loaded = (env->client->puffer.id != 0);
 
         if (env->client->puffer_loaded) {

@@ -466,11 +466,11 @@ Client* make_client(Blastar* env) {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Blastar");
     Client* client = (Client*)malloc(sizeof(Client));
     SetTargetFPS(60);
-    client->player_texture = LoadTexture("resources/blastar/player_ship.png");
-    client->enemy_texture = LoadTexture("resources/blastar/enemy_ship.png");
-    client->player_bullet_texture = LoadTexture("resources/blastar/player_bullet.png");
-    client->enemy_bullet_texture = LoadTexture("resources/blastar/enemy_bullet.png");
-    client->explosion_texture = LoadTexture("resources/blastar/player_death_explosion.png");
+    client->player_texture = LoadTexture(puf_resource("blastar/player_ship.png"));
+    client->enemy_texture = LoadTexture(puf_resource("blastar/enemy_ship.png"));
+    client->player_bullet_texture = LoadTexture(puf_resource("blastar/player_bullet.png"));
+    client->enemy_bullet_texture = LoadTexture(puf_resource("blastar/enemy_bullet.png"));
+    client->explosion_texture = LoadTexture(puf_resource("blastar/player_death_explosion.png"));
     env->client = client;
     return client;
 }

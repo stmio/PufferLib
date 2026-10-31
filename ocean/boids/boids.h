@@ -20,7 +20,7 @@ typedef float obs_t;
 #define HEIGHT 720
 #define BOID_WIDTH 32
 #define BOID_HEIGHT 32
-#define BOID_TEXTURE_PATH "./resources/puffers_128.png"
+#define BOID_TEXTURE_PATH puf_resource("shared/puffers_128.png")
 
 // Per-agent obs: relative (x, y, vx, vy) for each of MAX_BOIDS neighbors
 // Config: num_boids = 64 in config/boids.ini

@@ -317,12 +317,12 @@ void puf_step(Boxoban* env) {
 
 Client* make_client(Boxoban* env) {
     Client* client = (Client*)calloc(1,sizeof(Client));
-    client->wall = LoadTexture("resources/boxoban/Wall_Black.jpg");
-    client->box = LoadTexture("resources/boxoban/Crate_Black.jpg");
-    client->target = LoadTexture("resources/boxoban/EndPoint_Black.jpg");
-    client->floor = LoadTexture("resources/boxoban/GroundGravel_Concrete.jpg");
-    client->box_on_target = LoadTexture("resources/boxoban/EndPoint_Blue.jpg");
-    client->agent = LoadTexture("resources/shared/puffers_128.png");
+    client->wall = LoadTexture(puf_resource("boxoban/Wall_Black.jpg"));
+    client->box = LoadTexture(puf_resource("boxoban/Crate_Black.jpg"));
+    client->target = LoadTexture(puf_resource("boxoban/EndPoint_Black.jpg"));
+    client->floor = LoadTexture(puf_resource("boxoban/GroundGravel_Concrete.jpg"));
+    client->box_on_target = LoadTexture(puf_resource("boxoban/EndPoint_Blue.jpg"));
+    client->agent = LoadTexture(puf_resource("shared/puffers_128.png"));
     env-> client = client;
     return client;
 }

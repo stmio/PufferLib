@@ -27,7 +27,10 @@ static inline void osrs_time_log(const char* label, double* t0) {
 #include "osrs_assets_generated.h"
 #include "osrs_binary_io.h"
 
-#define OSRS_ASSET_ROOT_DEFAULT "ocean/osrs/data"
+#ifndef PUFFER_ROOT
+#define PUFFER_ROOT "."
+#endif
+#define OSRS_ASSET_ROOT_DEFAULT PUFFER_ROOT "/ocean/osrs/data"
 #define OSRS_ASSET(path) osrs_asset_path(path)
 
 typedef struct {

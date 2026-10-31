@@ -113,7 +113,7 @@ void puf_step(Env* env) {
 void puf_render(Env* env) {
     if (!IsWindowReady()) {
         InitWindow(WIDTH, HEIGHT, "PufferLib Env"); SetTargetFPS(30);
-        env->sprites = LoadTexture("resources/shared/puffers.png");
+        env->sprites = LoadTexture(puf_resource("shared/puffers.png"));
     }
     if (IsKeyDown(KEY_ESCAPE)) exit(0);
     BeginDrawing();

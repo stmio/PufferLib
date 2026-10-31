@@ -2092,10 +2092,8 @@ static void ra_draw(RaRenderHost* host, const RaState* state,
                 2.0f*RA_CUBE_HALF, 2.0f*RA_CUBE_HALF,
                 2.0f*RA_CUBE_HALF));
             renderer->cube_loaded = renderer->cube.meshCount > 0;
-            const char* lighting_vs =
-                "resources/robot_arm/panda_lighting.vs";
-            const char* lighting_fs =
-                "resources/robot_arm/panda_lighting.fs";
+            const char* lighting_vs = puf_resource("robot_arm/panda_lighting.vs");
+            const char* lighting_fs = puf_resource("robot_arm/panda_lighting.fs");
             if (FileExists(lighting_vs) && FileExists(lighting_fs)) {
                 renderer->skin_shader = LoadShader(
                     lighting_vs, lighting_fs);

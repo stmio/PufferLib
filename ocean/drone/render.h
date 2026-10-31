@@ -312,28 +312,22 @@ Client* make_client(DroneEnv* env) {
     client->model_scale = MODEL_SCALE_NORMAL;
 
     // Load 3D model
-    const char* model_paths[] = {"resources/crazyflie.glb", "resources/drone/crazyflie.glb",
-                                 "crazyflie.glb", NULL};
+    const char* model_path = puf_resource("drone/crazyflie.glb");
+    if (FileExists(model_path)) {
+        client->drone_model = LoadModel(model_path);
 
-    for (int i = 0; model_paths[i] != NULL; i++) {
-        if (FileExists(model_paths[i])) {
-            client->drone_model = LoadModel(model_paths[i]);
+        if (client->drone_model.meshCount > 0) {
+            client->model_loaded = true;
+            TraceLog(LOG_INFO, "Loaded drone model: %s", model_path);
 
-            if (client->drone_model.meshCount > 0) {
-                client->model_loaded = true;
-                TraceLog(LOG_INFO, "Loaded drone model: %s", model_paths[i]);
+            // Cache propeller centers
+            for (int p = 0; p < NUM_PROPELLERS; p++) {
+                int idx = PROP_MESH_IDX[p];
 
-                // Cache propeller centers
-                for (int p = 0; p < NUM_PROPELLERS; p++) {
-                    int idx = PROP_MESH_IDX[p];
-
-                    if (idx < client->drone_model.meshCount) {
-                        client->prop_centers[p] =
-                            compute_mesh_center(&client->drone_model.meshes[idx]);
-                    }
+                if (idx < client->drone_model.meshCount) {
+                    client->prop_centers[p] =
+                        compute_mesh_center(&client->drone_model.meshes[idx]);
                 }
-
-                break;
             }
         }
     }

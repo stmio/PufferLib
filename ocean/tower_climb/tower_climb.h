@@ -1344,15 +1344,15 @@ Client* make_client(TowerClimb* env) {
     client->camera.fovy = 45.0f;
     client->camera.projection = CAMERA_PERSPECTIVE;
     // load background
-    client->background = LoadTexture("resources/tower_climb/space2.jpg");
+    client->background = LoadTexture(puf_resource("tower_climb/space2.jpg"));
     // load robot & cube models
-    client->robot = LoadModel("resources/tower_climb/small_astro.glb");
-    client->cube = LoadModel("resources/tower_climb/spacerock.glb");
-    client->puffer = LoadModel("resources/shared/puffer.glb");
+    client->robot = LoadModel(puf_resource("tower_climb/small_astro.glb"));
+    client->cube = LoadModel(puf_resource("tower_climb/spacerock.glb"));
+    client->puffer = LoadModel(puf_resource("shared/puffer.glb"));
     printf("Loaded puffer.glb with %d meshes and %d materials\n", client->puffer.meshCount, client->puffer.materialCount);
     if (client->puffer.meshCount == 0) {
         printf("WARNING: puffer.glb failed to load, trying puffer.usdz...\n");
-        client->puffer = LoadModel("resources/tower_climb/puffer.usdz");
+        client->puffer = LoadModel(puf_resource("tower_climb/puffer.usdz"));
         printf("Loaded puffer.usdz with %d meshes and %d materials\n", client->puffer.meshCount, client->puffer.materialCount);
         if (client->puffer.meshCount == 0) {
             printf("ERROR: Both puffer files failed to load!\n");
@@ -1363,17 +1363,15 @@ Client* make_client(TowerClimb* env) {
     float scale = 1.0f / cubeSize;
     client->scale = scale; 
     int animCount = 0;
-    client->animations = LoadModelAnimations("resources/tower_climb/small_astro.glb", &animCount);
+    client->animations = LoadModelAnimations(puf_resource("tower_climb/small_astro.glb"), &animCount);
     printf("Loaded %d animations\n", animCount);
     client->animState = ANIM_IDLE;
     client->animFrameCounter = 0;
     UpdateModelAnimation(client->robot, client->animations[4], 0); 
     // Load and configure shader
-    char vsPath[256];
-    char fsPath[256];
-    sprintf(vsPath, "resources/tower_climb/shaders/gls%i/lighting.vs", GLSL_VERSION);
-    sprintf(fsPath, "resources/tower_climb/shaders/gls%i/lighting.fs", GLSL_VERSION);
-    client->shader = LoadShader(vsPath, fsPath);
+    client->shader = LoadShader(
+        puf_resource("tower_climb/shaders/gls%i/lighting.vs", GLSL_VERSION),
+        puf_resource("tower_climb/shaders/gls%i/lighting.fs", GLSL_VERSION));
     // Get shader locations
     client->shader.locs[SHADER_LOC_VECTOR_VIEW] = GetShaderLocation(client->shader, "viewPos");
     // Set up ambient light (increased for softer overall lighting)
@@ -2254,7 +2252,7 @@ void puf_log(Log* log, Dict* out) {
 }
 
 static void tower_climb_load_shared_maps(Env* env) {
-    const char* path = "resources/tower_climb/maps.bin";
+    const char* path = puf_resource("tower_climb/maps.bin");
     int num_maps = 0;
     Level* levels = load_levels_from_file(&num_maps, path);
     if (levels == NULL) {
@@ -2312,7 +2310,7 @@ Env* my_vec_init(int* num_envs_out, int* env_starts, int* env_counts,
     float reward_illegal_move = dict_get(env_kwargs, "reward_illegal_move");
     float reward_move_block = dict_get(env_kwargs, "reward_move_block");
 
-    const char* path = "resources/tower_climb/maps.bin";
+    const char* path = puf_resource("tower_climb/maps.bin");
     int num_maps = 0;
 
     Level* levels = load_levels_from_file(&num_maps, path);

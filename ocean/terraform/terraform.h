@@ -904,12 +904,12 @@ Client* make_client(Terraform* env) {
     client->camera = camera;
 
     client->shader = LoadShader(
-        TextFormat("resources/terraform/shader_%i.vs", GLSL_VERSION),
-        TextFormat("resources/terraform/shader_%i.fs", GLSL_VERSION)
+        puf_resource("terraform/shader_%i.vs", GLSL_VERSION),
+        puf_resource("terraform/shader_%i.fs", GLSL_VERSION)
     );
     client->target_shader = LoadShader(
-        TextFormat("resources/terraform/shader_%i.vs", GLSL_VERSION),
-        TextFormat("resources/terraform/target_shader_%i.fs", GLSL_VERSION)
+        puf_resource("terraform/shader_%i.vs", GLSL_VERSION),
+        puf_resource("terraform/target_shader_%i.fs", GLSL_VERSION)
     );
 
     Image img = GenImageColor(env->size, env->size, WHITE);
@@ -929,9 +929,9 @@ Client* make_client(Terraform* env) {
     SetShaderValue(client->target_shader, shader_height_loc, &env->size, SHADER_UNIFORM_INT);
  
     //Image checked = GenImageChecked(env->size, env->size, 2, 2, PUFF_RED, PUFF_CYAN);
-    img = LoadImage("resources/terraform/perlin.jpg");
+    img = LoadImage(puf_resource("terraform/perlin.jpg"));
     client->texture = LoadTextureFromImage(img);
-    client->dozer = LoadModel("resources/terraform/dozer.glb");
+    client->dozer = LoadModel(puf_resource("terraform/dozer.glb"));
     UnloadImage(img);
     client->mesh = NULL;
     return client;
